@@ -17,6 +17,14 @@ const initialPrompt = (type) => {
             });
             break;
         }
+        case 'ADD EMPLOYEE': {
+            init();
+            break;
+        }
+        case 'UPDATE EMPLOYEE ROLES': {
+            init();
+            break;
+        }
         case 'VIEW ALL ROLES': {
             db.query('SELECT * FROM role', (err, roles) => {
                 console.table(roles);
@@ -24,11 +32,23 @@ const initialPrompt = (type) => {
             });
             break;
         }
+        case 'ADD ROLE': {
+            init();
+            break;
+        }
         case 'VIEW ALL DEPARTMENTS': {
             db.query('SELECT * FROM department', (err, departments) => {
                 console.table(departments);
                 init();
             });
+            break;
+        }
+        case 'ADD DEPARTMENT': {
+            init();
+            break;
+        }
+        case 'QUIT': {
+            init();
             break;
         }
     }
