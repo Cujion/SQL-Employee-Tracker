@@ -43,7 +43,10 @@ prompt({
         'ADD EMPLOYEE',
         'UPDATE EMPLOYEE ROLE',
         'VIEW ALL ROLES',
+        'ADD ROLE',
         'VIEW ALL DEPARTMENTS',
+        'ADD DEPARTMENT',
+        'QUIT'
     ],
     name: 'type',
 })
