@@ -50,7 +50,7 @@ const initialPrompt = (type) => {
             quit();
             break;
     }
-}
+};
 
 viewAllEmployees = () => {
     db.query('SELECT * FROM employee', (err, employees) => {
@@ -61,11 +61,11 @@ viewAllEmployees = () => {
 
 addEmployee = () => {
     db.query('SELECT * FROM role', (err, roles) => {
-        const possibleRoles = roles.map(role => ({ value: role.title }));
-        console.log("possibleRoles", possibleRoles);
+        const possibleRoles = roles.map(role => ({ name: role.title, value: role.department_id }));
+        console.log('possibleRoles', possibleRoles);
         db.query('SELECT * FROM employee', (err, employees) => {
             const possibleManagers = employees.map(employee => ({ name: employee.first_name + ' ' + employee.last_name }));
-            console.log("possibleManager", possibleManagers);
+            console.log('possibleManager', possibleManagers);
             prompt([
                 {
                     name: 'firstName',
@@ -95,16 +95,37 @@ addEmployee = () => {
 };
 
 updateEmployeeRole = () => {
-
-}
+    db.query('SELECT * FROM role', (err, roles) => {
+        const grabRoles = roles.map(role => ({ name: role.title, value: role.department_id }));
+        console.log('AllRoles', grabRoles);
+        db.query('SELECT * FROM employee', (err, employees) => {
+            const grabEmployees = employees.map(employee => ({ name: employee.first_name + ' ' + employee.last_name }));
+            console.log('AllEmployees', grabEmployees);
+            prompt([
+                {
+                    name: 'employeeNames',
+                    type: 'list',
+                    message: "Which employee's role would you like to update?",
+                    choices: grabEmployees
+                },
+                {
+                    name: 'updateRole',
+                    type: 'list',
+                    message: 'What role should the employee be updated to?',
+                    choices: grabRoles
+                }
+            ]).then()
+        });
+    })
+};
 
 updateEmployeeManager = () => {
 
-}
+};
 
 deleteEmployee = () => {
 
-}
+};
 
 viewAllRoles = () => {
     db.query('SELECT * FROM role', (err, roles) => {
@@ -115,11 +136,11 @@ viewAllRoles = () => {
 
 addRole = () => {
 
-}
+};
 
 deleteRole = () => {
 
-}
+};
 
 viewAllDepartments = () => {
     db.query('SELECT * FROM department', (err, departments) => {
@@ -130,15 +151,15 @@ viewAllDepartments = () => {
 
 addDepartment = () => {
 
-}
+};
 
 deleteDepartment = () => {
 
-}
+};
 
 viewDepartmentBudget = () => {
 
-}
+};
 
 const init = () => {
     console.info(`
@@ -179,10 +200,10 @@ const init = () => {
         .then((answers) => {
             initialPrompt(answers.type);
         });
-}
+};
 
 quit = () => {
 
-}
+};
 
 init();
