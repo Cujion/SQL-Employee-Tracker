@@ -163,7 +163,27 @@ viewAllRoles = () => {
 };
 
 addRole = () => {
-
+    db.query('SELECT * FROM role', (err, roles) => {
+        const grabRoles = roles.map(role => ({ name: role.title, value: role.department_id }));
+        prompt([
+            {
+                name: 'title',
+                type: 'input',
+                message: 'What is the name of the role you are adding?'
+            },
+            {
+                name: 'salary',
+                type: 'input',
+                message: 'What is the salary of the role you are adding?'
+            },
+            {
+                name: 'department',
+                type: 'list',
+                message: 'Which department would you like to add this role too?',
+                choices: grabRoles
+            }
+        ]).then()
+    });
 };
 
 deleteRole = () => {
