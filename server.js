@@ -150,7 +150,13 @@ viewAllDepartments = () => {
 };
 
 addDepartment = () => {
-
+    prompt([
+        {
+            name: 'addDepartment',
+            type: 'input',
+            message: 'Enter the name of the new department you would like to add.'
+        }
+    ])
 };
 
 deleteDepartment = () => {
