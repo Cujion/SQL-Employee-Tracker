@@ -151,7 +151,7 @@ deleteEmployee = () => {
                 message: "Which employee would you like to delete from database?",
                 choices: grabEmployees
             }
-        ])
+        ]).then()
     })
 };
 
@@ -165,6 +165,7 @@ viewAllRoles = () => {
 addRole = () => {
     db.query('SELECT * FROM role', (err, roles) => {
         const grabRoles = roles.map(role => ({ name: role.title, value: role.department_id }));
+        console.log('AllRoles', grabRoles);
         prompt([
             {
                 name: 'title',
@@ -187,7 +188,18 @@ addRole = () => {
 };
 
 deleteRole = () => {
-
+    db.query('SELECT * FROM role', (err, roles) => {
+        const grabRoles = roles.map(role => ({ name: role.title, value: role.department_id }));
+        console.log('AllRoles', grabRoles);
+        prompt([
+            {
+                name: 'roles',
+                type: 'list',
+                message: "Which role would you like to delete from database?",
+                choices: grabRoles
+            }
+        ]).then()
+    })
 };
 
 viewAllDepartments = () => {
@@ -204,15 +216,37 @@ addDepartment = () => {
             type: 'input',
             message: 'Enter the name of the new department you would like to add.'
         }
-    ])
+    ]).then()
 };
 
 deleteDepartment = () => {
-
+    db.query('SELECT * FROM department', (err, departments) => {
+        const grabDepartments = departments.map(department => ({ name: department.name }));
+        console.log('AllDepartments', grabDepartments);
+        prompt([
+            {
+                name: 'departments',
+                type: 'list',
+                message: "Which department would you like to delete from database?",
+                choices: grabDepartments
+            }
+        ]).then()
+    })
 };
 
 viewDepartmentBudget = () => {
-
+    db.query('SELECT * FROM department', (err, departments) => {
+        const grabDepartments = departments.map(department => ({ name: department.name }));
+        console.log('AllDepartments', grabDepartments);
+        prompt([
+            {
+                name: 'departments',
+                type: 'list',
+                message: "Which department would you like to see the total utilized budget of?",
+                choices: grabDepartments
+            }
+        ]).then()
+    })
 };
 
 const init = () => {
@@ -257,7 +291,17 @@ const init = () => {
 };
 
 quit = () => {
-
+    prompt({
+        name: 'quit',
+        type: 'confirm',
+        message: 'Are you finished editing database?',
+        default: true
+    }).then((answer) => {
+        if (answer.quit === false) return init();
+        else {
+            db.end();
+        }
+    })
 };
 
 init();
