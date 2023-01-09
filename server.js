@@ -13,32 +13,42 @@ const initialPrompt = (type) => {
         case 'VIEW ALL EMPLOYEES':
             viewAllEmployees();
             break;
-        case 'ADD EMPLOYEE': {
+        case 'ADD EMPLOYEE': 
             addEmployee();
             break;
-        }
-        case 'UPDATE EMPLOYEE ROLES': {
-            init();
+        case 'UPDATE EMPLOYEE ROLES':
+            updateEmployeeRole();
             break;
-        }
+        case 'UPDATE EMPLOYEES MANAGER':
+            updateEmployeeManager();
+            break;
         case 'VIEW ALL ROLES':
             viewAllRoles();
             break;
-        case 'ADD ROLE': {
-            init();
+        case 'ADD ROLE':
+            addRole();
             break;
-        }
         case 'VIEW ALL DEPARTMENTS':
             viewAllDepartments();
             break;
-        case 'ADD DEPARTMENT': {
-            init();
+        case 'ADD DEPARTMENT':
+            addDepartment();
             break;
-        }
-        case 'QUIT': {
-            init();
+        case 'DELETE AN EMPLOYEE':
+            deleteEmployee();
             break;
-        }
+        case 'DELETE A ROLE':
+            deleteRole();
+            break;
+        case 'DELETE A DEPARTMENT':
+            deleteDepartment();
+            break;
+        case 'VIEW A DEPARTMENTS TOTAL UTILIZED BUDGET':
+            viewDepartmentBudget();
+            break;
+        case 'QUIT':
+            quit();
+            break;
     }
 }
 
@@ -84,6 +94,18 @@ addEmployee = () => {
     })
 };
 
+updateEmployeeRole = () => {
+
+}
+
+updateEmployeeManager = () => {
+
+}
+
+deleteEmployee = () => {
+
+}
+
 viewAllRoles = () => {
     db.query('SELECT * FROM role', (err, roles) => {
         console.table(roles);
@@ -91,12 +113,32 @@ viewAllRoles = () => {
     });
 };
 
+addRole = () => {
+
+}
+
+deleteRole = () => {
+
+}
+
 viewAllDepartments = () => {
     db.query('SELECT * FROM department', (err, departments) => {
         console.table(departments);
         init();
     });
 };
+
+addDepartment = () => {
+
+}
+
+deleteDepartment = () => {
+
+}
+
+viewDepartmentBudget = () => {
+
+}
 
 const init = () => {
     console.info(`
@@ -132,6 +174,10 @@ const init = () => {
         .then((answers) => {
             initialPrompt(answers.type);
         });
+}
+
+quit = () => {
+
 }
 
 init();
