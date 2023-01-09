@@ -141,7 +141,18 @@ updateEmployeeManager = () => {
 };
 
 deleteEmployee = () => {
-
+    db.query('SELECT * FROM employee', (err, employees) => {
+        const grabEmployees = employees.map(employee => ({ name: employee.first_name + ' ' + employee.last_name, value: employee.manager_id }));
+        console.log('AllEmployees', grabEmployees);
+        prompt([
+            {
+                name: 'employee',
+                type: 'list',
+                message: "Which employee would you like to delete from database?",
+                choices: grabEmployees
+            }
+        ])
+    })
 };
 
 viewAllRoles = () => {
