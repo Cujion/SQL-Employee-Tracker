@@ -51,7 +51,7 @@ viewAllEmployees = () => {
 
 addEmployee = () => {
     db.query('SELECT * FROM role', (err, roles) => {
-        const possibleRoles = roles.map(role => ({ department: role.title }));
+        const possibleRoles = roles.map(role => ({ value: role.title }));
         console.log("possibleRoles", possibleRoles);
         db.query('SELECT * FROM employee', (err, employees) => {
             const possibleManagers = employees.map(employee => ({ name: employee.first_name + ' ' + employee.last_name }));
