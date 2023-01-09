@@ -54,6 +54,7 @@ const initialPrompt = (type) => {
 
 viewAllEmployees = () => {
     db.query('SELECT * FROM employee', (err, employees) => {
+        if (err) throw console.error('Error Viewing All Employees');
         console.table(employees);
         init();
     });
@@ -61,6 +62,7 @@ viewAllEmployees = () => {
 
 addEmployee = () => {
     db.query('SELECT * FROM role', (err, roles) => {
+        if (err) throw console.error('Error Adding Employee');
         const possibleRoles = roles.map(role => ({ name: role.title, value: role.department_id }));
         console.log('possibleRoles', possibleRoles);
         db.query('SELECT * FROM employee', (err, employees) => {
@@ -89,13 +91,27 @@ addEmployee = () => {
                     message: "Who is the new employee's manager?",
                     choices: possibleManagers
                 }
-            ]).then()
+            ]).then((answers) => {
+                console.table([answers])
+                db.query('INSERT INTO TABLE employee', 
+                {
+                    first_name: answers.firstName,
+                    last_name: answers.lastName,
+                    role_id: answers.role,
+                    manager_id: answers.manager
+                },
+                (err, employee) => {
+                    if (err) throw console.error('Error Adding New Employee Into Database');
+                })
+                init();
+            })
         });
     })
 };
 
 updateEmployeeRole = () => {
     db.query('SELECT * FROM role', (err, roles) => {
+        if (err) throw console.error('Error Updating Employee Role');
         const grabRoles = roles.map(role => ({ name: role.title, value: role.department_id }));
         console.log('AllRoles', grabRoles);
         db.query('SELECT * FROM employee', (err, employees) => {
@@ -114,13 +130,19 @@ updateEmployeeRole = () => {
                     message: 'What role should the employee be updated to?',
                     choices: grabRoles
                 }
-            ]).then()
+            ]).then((answers) => {
+                console.table([answers])
+                db.query('INSERT INTO role', {
+                    
+                })
+            })
         });
     })
 };
 
 updateEmployeeManager = () => {
     db.query('SELECT * FROM employee', (err, employees) => {
+        if (err) throw console.error('Error Updating Employee Manager');
         const grabEmployees = employees.map(employee => ({ name: employee.first_name + ' ' + employee.last_name, value: employee.manager_id }));
         console.log('AllEmployees', grabEmployees);
         prompt([
@@ -142,6 +164,7 @@ updateEmployeeManager = () => {
 
 deleteEmployee = () => {
     db.query('SELECT * FROM employee', (err, employees) => {
+        if (err) throw console.error('Error Deleting Employee');
         const grabEmployees = employees.map(employee => ({ name: employee.first_name + ' ' + employee.last_name, value: employee.manager_id }));
         console.log('AllEmployees', grabEmployees);
         prompt([
@@ -164,6 +187,7 @@ viewAllRoles = () => {
 
 addRole = () => {
     db.query('SELECT * FROM role', (err, roles) => {
+        if (err) throw console.error('Error Adding Role');
         const grabRoles = roles.map(role => ({ name: role.title, value: role.department_id }));
         console.log('AllRoles', grabRoles);
         prompt([
@@ -189,6 +213,7 @@ addRole = () => {
 
 deleteRole = () => {
     db.query('SELECT * FROM role', (err, roles) => {
+        if (err) throw console.error('Error Deleting Role');
         const grabRoles = roles.map(role => ({ name: role.title, value: role.department_id }));
         console.log('AllRoles', grabRoles);
         prompt([
@@ -204,6 +229,7 @@ deleteRole = () => {
 
 viewAllDepartments = () => {
     db.query('SELECT * FROM department', (err, departments) => {
+        if (err) throw console.error('Error Viewing All Departments');
         console.table(departments);
         init();
     });
@@ -221,6 +247,7 @@ addDepartment = () => {
 
 deleteDepartment = () => {
     db.query('SELECT * FROM department', (err, departments) => {
+        if (err) throw console.error('Error Deleting Department');
         const grabDepartments = departments.map(department => ({ name: department.name }));
         console.log('AllDepartments', grabDepartments);
         prompt([
@@ -236,6 +263,7 @@ deleteDepartment = () => {
 
 viewDepartmentBudget = () => {
     db.query('SELECT * FROM department', (err, departments) => {
+        if (err) throw console.error('Error Viewing Department Budget');
         const grabDepartments = departments.map(department => ({ name: department.name }));
         console.log('AllDepartments', grabDepartments);
         prompt([
@@ -250,21 +278,6 @@ viewDepartmentBudget = () => {
 };
 
 const init = () => {
-    console.info(`
-    ╔ ╗╔════╔═══╗═════╔╗══════════════════╗╔ ╗
-    ║ ║╚════║╔══╝═════║║══════════════════╝║ ║
-    ║ ║     ║╚══╦╗╔╦══╣║╔══╦╗─╔╦══╦══╗     ║ ║
-    ║ ║     ║╔══╣╚╝║╔╗║║║╔╗║║─║║║═╣║═╣     ║ ║
-    ║ ║     ║╚══╣║║║╚╝║╚╣╚╝║╚═╝║║═╣║═╣     ║ ║
-    ║ ║     ╚═══╩╩╩╣╔═╩═╩══╩═╗╔╩══╩══╝     ║ ║
-    ║ ║╔════╔═╗╔═╗═║║══════╔═╝║═══════════╗║ ║
-    ║ ║╚════║║╚╝║║═╚╝══════╚══╝═══════════╝║ ║
-    ║ ║     ║╔╗╔╗╠══╦═╗╔══╦══╦══╦═╗        ║ ║
-    ║ ║     ║║║║║║╔╗║╔╗╣╔╗║╔╗║║═╣╔╝        ║ ║
-    ║ ║     ║║║║║║╔╗║║║║╔╗║╚╝║║═╣║         ║ ║
-    ║ ║     ╚╝╚╝╚╩╝╚╩╝╚╩╝╚╩═╗╠══╩╝         ║ ║
-    ║ ║╔══════════════════╔═╝║════════════╗║ ║
-    ╚ ╝╚══════════════════╚══╝════════════╝╚ ╝`)
     prompt({
         type: 'rawlist',
         message: 'What would you like to do?',
@@ -290,6 +303,24 @@ const init = () => {
         });
 };
 
+start = () => {console.info(`
+╔ ╗╔════╔═══╗═════╔╗══════════════════╗╔ ╗
+║ ║╚════║╔══╝═════║║══════════════════╝║ ║
+║ ║     ║╚══╦╗╔╦══╣║╔══╦╗─╔╦══╦══╗     ║ ║
+║ ║     ║╔══╣╚╝║╔╗║║║╔╗║║─║║║═╣║═╣     ║ ║
+║ ║     ║╚══╣║║║╚╝║╚╣╚╝║╚═╝║║═╣║═╣     ║ ║
+║ ║     ╚═══╩╩╩╣╔═╩═╩══╩═╗╔╩══╩══╝     ║ ║
+║ ║╔════╔═╗╔═╗═║║══════╔═╝║═══════════╗║ ║
+║ ║╚════║║╚╝║║═╚╝══════╚══╝═══════════╝║ ║
+║ ║     ║╔╗╔╗╠══╦═╗╔══╦══╦══╦═╗        ║ ║
+║ ║     ║║║║║║╔╗║╔╗╣╔╗║╔╗║║═╣╔╝        ║ ║
+║ ║     ║║║║║║╔╗║║║║╔╗║╚╝║║═╣║         ║ ║
+║ ║     ╚╝╚╝╚╩╝╚╩╝╚╩╝╚╩═╗╠══╩╝         ║ ║
+║ ║╔══════════════════╔═╝║════════════╗║ ║
+╚ ╝╚══════════════════╚══╝════════════╝╚ ╝`)
+    init();
+};
+
 quit = () => {
     prompt({
         name: 'quit',
@@ -304,4 +335,4 @@ quit = () => {
     })
 };
 
-init();
+start();
