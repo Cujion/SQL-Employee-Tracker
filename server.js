@@ -11,10 +11,10 @@ const db = mysql.createConnection({
 const initialPrompt = (type) => {
     switch (type) {
         case 'VIEW ALL EMPLOYEES':
-            viewAllDepartments();
+            viewAllEmployees();
             break;
         case 'ADD EMPLOYEE': {
-            init();
+            addEmployee();
             break;
         }
         case 'UPDATE EMPLOYEE ROLES': {
@@ -42,9 +42,36 @@ const initialPrompt = (type) => {
     }
 }
 
-viewAllDepartments = () => {
+viewAllEmployees = () => {
     db.query('SELECT * FROM employee', (err, employees) => {
         console.table(employees);
+        init();
+    });
+};
+
+addEmployee = () => {
+    db.query('INSERT INTO employee', (err, employees) => {
+        prompt({
+            name: 'firstName',
+            type: 'input',
+            message: "What is the new employee's first name?"
+        },
+        {
+            name: 'lastName',
+            type: 'input',
+            message: "What is the new employee's last name?"
+        },
+        {
+            name: 'role',
+            type: 'rawlist',
+            message: "What is the new employee's role?"
+        },
+        {
+            name: 'manager',
+            type: 'rawlist',
+            message: "Who is the new employee's manager?",
+            choices: employees
+        })
         init();
     });
 };
