@@ -50,30 +50,38 @@ viewAllEmployees = () => {
 };
 
 addEmployee = () => {
-    db.query('INSERT INTO employee', (err, employees) => {
-        prompt({
-            name: 'firstName',
-            type: 'input',
-            message: "What is the new employee's first name?"
-        },
-        {
-            name: 'lastName',
-            type: 'input',
-            message: "What is the new employee's last name?"
-        },
-        {
-            name: 'role',
-            type: 'rawlist',
-            message: "What is the new employee's role?"
-        },
-        {
-            name: 'manager',
-            type: 'rawlist',
-            message: "Who is the new employee's manager?",
-            choices: employees
-        })
-        init();
-    });
+    db.query('SELECT * FROM role', (err, roles) => {
+        const possibleRoles = roles.map(role => ({ value: role.title }));
+        console.log("possibleRoles", possibleRoles);
+        db.query('SELECT * FROM employee', (err, employees) => {
+            const possibleManagers = employees.map(employee => ({ name: employee.first_name + ' ' + employee.last_name }));
+            console.log("possibleManager", possibleManagers);
+            prompt([
+                {
+                name: 'firstName',
+                type: 'input',
+                message: "What is the new employee's first name?"
+                },
+                {
+                    name: 'lastName',
+                    type: 'input',
+                    message: "What is the new employee's last name?"
+                },
+                {
+                    name: 'role',
+                    type: 'list',
+                    message: "What is the new employee's role?",
+                    choices: possibleRoles
+                },
+                {
+                    name: 'manager',
+                    type: 'list',
+                    message: "Who is the new employee's manager?",
+                    choices: possibleManagers
+                }
+            ]).then()
+        });
+    })
 };
 
 viewAllRoles = () => {
@@ -91,7 +99,7 @@ viewAllDepartments = () => {
 };
 
 const init = () => {
-    console.info (`
+    console.info(`
     ╔ ╗╔════╔═══╗═════╔╗══════════════════╗╔ ╗
     ║ ║╚════║╔══╝═════║║══════════════════╝║ ║
     ║ ║     ║╚══╦╗╔╦══╣║╔══╦╗─╔╦══╦══╗     ║ ║
