@@ -13,7 +13,7 @@ const initialPrompt = (type) => {
         case 'VIEW ALL EMPLOYEES':
             viewAllEmployees();
             break;
-        case 'ADD EMPLOYEE': 
+        case 'ADD EMPLOYEE':
             addEmployee();
             break;
         case 'UPDATE EMPLOYEE ROLES':
@@ -68,9 +68,9 @@ addEmployee = () => {
             console.log("possibleManager", possibleManagers);
             prompt([
                 {
-                name: 'firstName',
-                type: 'input',
-                message: "What is the new employee's first name?"
+                    name: 'firstName',
+                    type: 'input',
+                    message: "What is the new employee's first name?"
                 },
                 {
                     name: 'lastName',
@@ -163,10 +163,15 @@ const init = () => {
             'VIEW ALL EMPLOYEES',
             'ADD EMPLOYEE',
             'UPDATE EMPLOYEE ROLE',
+            'UPDATE EMPLOYEES MANAGER',
             'VIEW ALL ROLES',
             'ADD ROLE',
             'VIEW ALL DEPARTMENTS',
             'ADD DEPARTMENT',
+            'DELETE AN EMPLOYEE',
+            'DELETE A ROLE',
+            'DELETE A DEPARTMENT',
+            'VIEW A DEPARTMENTS TOTAL UTILIZED BUDGET',
             'QUIT'
         ],
         name: 'type',
