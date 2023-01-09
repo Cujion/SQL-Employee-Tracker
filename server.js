@@ -99,7 +99,7 @@ updateEmployeeRole = () => {
         const grabRoles = roles.map(role => ({ name: role.title, value: role.department_id }));
         console.log('AllRoles', grabRoles);
         db.query('SELECT * FROM employee', (err, employees) => {
-            const grabEmployees = employees.map(employee => ({ name: employee.first_name + ' ' + employee.last_name }));
+            const grabEmployees = employees.map(employee => ({ name: employee.first_name + ' ' + employee.last_name, value: employee.role_id }));
             console.log('AllEmployees', grabEmployees);
             prompt([
                 {
@@ -120,7 +120,24 @@ updateEmployeeRole = () => {
 };
 
 updateEmployeeManager = () => {
-
+    db.query('SELECT * FROM employee', (err, employees) => {
+        const grabEmployees = employees.map(employee => ({ name: employee.first_name + ' ' + employee.last_name, value: employee.manager_id }));
+        console.log('AllEmployees', grabEmployees);
+        prompt([
+            {
+                name: 'employee',
+                type: 'list',
+                message: "Which employee would you like to update their manager?",
+                choices: grabEmployees
+            },
+            {
+                name: 'updatedManager',
+                type: 'list',
+                message: "Who is the new manager for the selected employee?",
+                choices: grabEmployees
+            }
+        ]).then()
+    })
 };
 
 deleteEmployee = () => {
