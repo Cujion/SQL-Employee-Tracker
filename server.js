@@ -16,7 +16,7 @@ const initialPrompt = (type) => {
         case 'ADD EMPLOYEE':
             addEmployee();
             break;
-        case 'UPDATE EMPLOYEE ROLES':
+        case 'UPDATE EMPLOYEE ROLE':
             updateEmployeeRole();
             break;
         case 'UPDATE EMPLOYEES MANAGER':
