@@ -133,7 +133,7 @@ updateEmployeeRole = () => {
             ]).then((answers) => {
                 console.table([answers])
                 db.query('INSERT INTO role', {
-                    
+
                 })
             })
         });
@@ -158,7 +158,12 @@ updateEmployeeManager = () => {
                 message: "Who is the new manager for the selected employee?",
                 choices: grabEmployees
             }
-        ]).then()
+        ]).then((answers) => {
+            console.table([answers])
+            db.query('INSERT INTO employee', {
+
+            })
+        })
     })
 };
 
@@ -174,7 +179,12 @@ deleteEmployee = () => {
                 message: "Which employee would you like to delete from database?",
                 choices: grabEmployees
             }
-        ]).then()
+        ]).then((answers) => {
+            console.table([answers])
+            db.query('INSERT INTO employee', {
+
+            })
+        })
     })
 };
 
@@ -207,7 +217,12 @@ addRole = () => {
                 message: 'Which department would you like to add this role too?',
                 choices: grabRoles
             }
-        ]).then()
+        ]).then((answers) => {
+            console.table([answers])
+            db.query('INSERT INTO role', {
+
+            })
+        })
     });
 };
 
@@ -223,7 +238,12 @@ deleteRole = () => {
                 message: "Which role would you like to delete from database?",
                 choices: grabRoles
             }
-        ]).then()
+        ]).then((answers) => {
+            console.table([answers])
+            db.query('INSERT INTO role', {
+
+            })
+        })
     })
 };
 
@@ -242,7 +262,12 @@ addDepartment = () => {
             type: 'input',
             message: 'Enter the name of the new department you would like to add.'
         }
-    ]).then()
+    ]).then((answers) => {
+        console.table([answers])
+        db.query('INSERT INTO department', {
+
+        })
+    })
 };
 
 deleteDepartment = () => {
@@ -257,7 +282,12 @@ deleteDepartment = () => {
                 message: "Which department would you like to delete from database?",
                 choices: grabDepartments
             }
-        ]).then()
+        ]).then((answers) => {
+            console.table([answers])
+            db.query('INSERT INTO department', {
+
+            })
+        })
     })
 };
 
@@ -273,7 +303,12 @@ viewDepartmentBudget = () => {
                 message: "Which department would you like to see the total utilized budget of?",
                 choices: grabDepartments
             }
-        ]).then()
+        ]).then((answers) => {
+            console.table([answers])
+            db.query('INSERT INTO department', {
+                
+            })
+        })
     })
 };
 
