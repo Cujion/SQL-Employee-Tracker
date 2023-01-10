@@ -10,29 +10,29 @@ const db = mysql.createConnection({
 
 const initialPrompt = (type) => {
     switch (type) {
+        case 'VIEW ALL DEPARTMENTS':
+            viewAllDepartments();
+            break;
         case 'VIEW ALL EMPLOYEES':
             viewAllEmployees();
             break;
+        case 'VIEW ALL ROLES':
+            viewAllRoles();
+            break;
+        case 'ADD DEPARTMENT':
+            addDepartment();
+            break;
         case 'ADD EMPLOYEE':
             addEmployee();
+            break;
+        case 'ADD ROLE':
+            addRole();
             break;
         case 'UPDATE EMPLOYEE ROLE':
             updateEmployeeRole();
             break;
         case 'UPDATE EMPLOYEES MANAGER':
             updateEmployeeManager();
-            break;
-        case 'VIEW ALL ROLES':
-            viewAllRoles();
-            break;
-        case 'ADD ROLE':
-            addRole();
-            break;
-        case 'VIEW ALL DEPARTMENTS':
-            viewAllDepartments();
-            break;
-        case 'ADD DEPARTMENT':
-            addDepartment();
             break;
         case 'DELETE AN EMPLOYEE':
             deleteEmployee();
@@ -52,6 +52,14 @@ const initialPrompt = (type) => {
     }
 };
 
+viewAllDepartments = () => {
+    db.query('SELECT * FROM department', (err, departments) => {
+        if (err) throw console.error('Error Viewing All Departments');
+        console.table(departments);
+        init();
+    });
+};
+
 viewAllEmployees = () => {
     db.query('SELECT * FROM employee', (err, employees) => {
         if (err) throw console.error('Error Viewing All Employees');
@@ -60,18 +68,36 @@ viewAllEmployees = () => {
     });
 };
 
-viewEmployeesByManager = () => {
-    db.query('SELECT ')
-}
+viewAllRoles = () => {
+    db.query('SELECT * FROM role', (err, roles) => {
+        console.table(roles);
+        init();
+    });
+};
+
+addDepartment = () => {
+    prompt([
+        {
+            name: 'addDepartment',
+            type: 'input',
+            message: 'Enter the name of the new department you would like to add.'
+        }
+    ]).then((answers) => {
+        console.table([answers])
+        db.query(`INSERT INTO department (name) VALUES ('${answers.addDepartment}');`,
+            (err) => {
+                if (err) throw console.error(err);
+            })
+        init();
+    })
+};
 
 addEmployee = () => {
     db.query('SELECT * FROM role', (err, roles) => {
-        if (err) throw console.error('Error Adding Employee');
+        if (err) throw console.error(err);
         const possibleRoles = roles.map(role => ({ name: role.title, value: role.department_id }));
-        console.log('possibleRoles', possibleRoles);
-        db.query('SELECT * FROM employee', (err, employees) => {
+        db.query('SELECT * FROM employee', (employees) => {
             const possibleManagers = employees.map(employee => ({ name: employee.first_name + ' ' + employee.last_name, value: employee.role_id }));
-            console.log('possibleManager', possibleManagers);
             prompt([
                 {
                     name: 'firstName',
@@ -97,24 +123,55 @@ addEmployee = () => {
                 }
             ]).then((answers) => {
                 console.table([answers])
-                db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${answers.firstName}','${answers.lastName}',${answers.role},${answers.manager});`, 
-                (err) => {
-                    if (err) throw console.error(err);
-                })
+                db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${answers.firstName}','${answers.lastName}',${answers.role},${answers.manager});`,
+                    (err) => {
+                        if (err) throw console.error(err);
+                    })
                 init();
             })
         });
     })
 };
 
+addRole = () => {
+    db.query('SELECT * FROM role', (err, roles) => {
+        if (err) throw console.error(err);
+        const grabRoles = roles.map(role => ({ name: role.title, value: role.department_id }));
+        console.log('AllRoles', grabRoles);
+        prompt([
+            {
+                name: 'title',
+                type: 'input',
+                message: 'What is the name of the role you are adding?'
+            },
+            {
+                name: 'salary',
+                type: 'input',
+                message: 'What is the salary of the role you are adding?'
+            },
+            {
+                name: 'department',
+                type: 'list',
+                message: 'Which department would you like to add this role too?',
+                choices: grabRoles
+            }
+        ]).then((answers) => {
+            console.table([answers])
+            db.query(`INSERT INTO role (title, salary, department_id) VALUES ('${answers.title}', ${answers.salary}, ${answers.department});`,
+                (err) => {
+                    if (err) throw console.error(err);
+                })
+            init();
+        })
+    });
+};
+
 updateEmployeeRole = () => {
     db.query('SELECT * FROM role', (err, roles) => {
-        if (err) throw console.error('Error Updating Employee Role');
+        if (err) throw console.error(err);
         const grabRoles = roles.map(role => ({ name: role.title, value: role.id }));
-        console.log('AllRoles', grabRoles);
-        db.query('SELECT * FROM employee', (err, employees) => {
+        db.query('SELECT * FROM employee', (employees) => {
             const grabEmployees = employees.map(employee => ({ name: employee.first_name + ' ' + employee.last_name, value: employee.id }));
-            console.log('AllEmployees', grabEmployees);
             prompt([
                 {
                     name: 'employeeNames',
@@ -140,7 +197,12 @@ updateEmployeeRole = () => {
         });
     })
 };
-// NEED CHECK IF NULL
+
+viewEmployeesByManager = () => {
+    db.query('SELECT ')
+}
+
+// NEED CHECK IF NULL BONUS
 updateEmployeeManager = () => {
     db.query('SELECT * FROM employee', (err, employees) => {
         if (err) throw console.error('Error Updating Employee Manager');
@@ -172,10 +234,10 @@ updateEmployeeManager = () => {
         })
     })
 };
-// NEEDS WORKS
+// NEEDS WORKS BONUS
 deleteEmployee = () => {
     db.query('SELECT * FROM employee', (err, employees) => {
-        if (err) throw console.error('Error Deleting Employee');
+        if (err) throw console.error(err);
         const grabEmployees = employees.map(employee => ({ name: employee.first_name + ' ' + employee.last_name }));
         console.log('AllEmployees', grabEmployees);
         prompt([
@@ -198,49 +260,10 @@ deleteEmployee = () => {
     })
 };
 
-viewAllRoles = () => {
-    db.query('SELECT * FROM role', (err, roles) => {
-        console.table(roles);
-        init();
-    });
-};
-
-addRole = () => {
-    db.query('SELECT * FROM role', (err, roles) => {
-        if (err) throw console.error('Error Adding Role');
-        const grabRoles = roles.map(role => ({ name: role.title, value: role.department_id }));
-        console.log('AllRoles', grabRoles);
-        prompt([
-            {
-                name: 'title',
-                type: 'input',
-                message: 'What is the name of the role you are adding?'
-            },
-            {
-                name: 'salary',
-                type: 'input',
-                message: 'What is the salary of the role you are adding?'
-            },
-            {
-                name: 'department',
-                type: 'list',
-                message: 'Which department would you like to add this role too?',
-                choices: grabRoles
-            }
-        ]).then((answers) => {
-            console.table([answers])
-            db.query(`INSERT INTO role (title, salary, department_id) VALUES ('${answers.title}', ${answers.salary}, ${answers.department});`, 
-            (err) => {
-                if (err) throw console.error(err);
-            })
-            init();
-        })
-    });
-};
-// NEEDS WORK
+// NEEDS WORK BONUS
 deleteRole = () => {
     db.query('SELECT * FROM role', (err, roles) => {
-        if (err) throw console.error('Error Deleting Role');
+        if (err) throw console.error(err);
         const grabRoles = roles.map(role => ({ name: role.title, value: role.department_id }));
         console.log('AllRoles', grabRoles);
         prompt([
@@ -256,37 +279,14 @@ deleteRole = () => {
 
             })
         })
-    })
-};
-
-viewAllDepartments = () => {
-    db.query('SELECT * FROM department', (err, departments) => {
-        if (err) throw console.error('Error Viewing All Departments');
-        console.table(departments);
-        init();
-    });
-};
-
-addDepartment = () => {
-    prompt([
-        {
-            name: 'addDepartment',
-            type: 'input',
-            message: 'Enter the name of the new department you would like to add.'
-        }
-    ]).then((answers) => {
-        console.table([answers])
-        db.query(`INSERT INTO department (name) VALUES ('${answers.addDepartment}');`, 
-        (err) => {
-            if (err) throw console.error(err);
-        })
         init();
     })
 };
-// NEEDS WORK
+
+// NEEDS WORK BONUS
 deleteDepartment = () => {
     db.query('SELECT * FROM department', (err, departments) => {
-        if (err) throw console.error('Error Deleting Department');
+        if (err) throw console.error(err);
         const grabDepartments = departments.map(department => ({ name: department.name }));
         console.log('AllDepartments', grabDepartments);
         prompt([
@@ -302,12 +302,13 @@ deleteDepartment = () => {
 
             })
         })
+        init();
     })
 };
-// NEEDS WORK
+// NEEDS WORK BONUS
 viewDepartmentBudget = () => {
     db.query('SELECT * FROM department', (err, departments) => {
-        if (err) throw console.error('Error Viewing Department Budget');
+        if (err) throw console.error(err);
         const grabDepartments = departments.map(department => ({ name: department.name }));
         console.log('AllDepartments', grabDepartments);
         prompt([
@@ -323,6 +324,7 @@ viewDepartmentBudget = () => {
 
             })
         })
+        init();
     })
 };
 
@@ -331,20 +333,20 @@ const init = () => {
         type: 'rawlist',
         message: 'What would you like to do?',
         choices: [
-            'VIEW ALL EMPLOYEES',
-            'ADD EMPLOYEE',
-            'UPDATE EMPLOYEE ROLE', 
-            'UPDATE EMPLOYEES MANAGER', //BONUS
-            // 'VIEW EMPLOYEES BY MANAGER', //BONUS
+            'VIEW ALL DEPARTMENTS', //DONE
+            'VIEW ALL EMPLOYEES', //DONE
+            'VIEW ALL ROLES', //DONE
             // 'VIEW EMPLOYEES BY DEPARTMENT', //BONUS
-            'VIEW ALL ROLES',
-            'ADD ROLE',
-            'VIEW ALL DEPARTMENTS',
-            'ADD DEPARTMENT',
-            'DELETE AN EMPLOYEE', //BONUS
-            'DELETE A ROLE', //BONUS  
-            'DELETE A DEPARTMENT', //BONUS 
-            'VIEW A DEPARTMENTS TOTAL UTILIZED BUDGET', //BONUS
+            // 'VIEW EMPLOYEES BY MANAGER', //BONUS
+            // 'VIEW A DEPARTMENTS TOTAL UTILIZED BUDGET', //BONUS
+            'ADD DEPARTMENT', //DONE
+            'ADD EMPLOYEE', //DONE
+            'ADD ROLE', //DONE
+            'UPDATE EMPLOYEE ROLE', //DONE 
+            // 'UPDATE EMPLOYEES MANAGER', //BONUS
+            // 'DELETE A DEPARTMENT', //BONUS 
+            // 'DELETE AN EMPLOYEE', //BONUS
+            // 'DELETE A ROLE', //BONUS  
             'QUIT'
         ],
         name: 'type',
@@ -354,7 +356,8 @@ const init = () => {
         });
 };
 
-start = () => {console.info(`
+start = () => {
+    console.info(`
 ╔ ╗╔════╔═══╗═════╔╗══════════════════╗╔ ╗
 ║ ║╚════║╔══╝═════║║══════════════════╝║ ║
 ║ ║     ║╚══╦╗╔╦══╣║╔══╦╗─╔╦══╦══╗     ║ ║
