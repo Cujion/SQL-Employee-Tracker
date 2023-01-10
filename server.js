@@ -78,7 +78,7 @@ viewAllRoles = () => {
 
 viewEmployeesByManager = () => {
     db.query('SELECT * FROM employee', (err, employee) => {
-        if (err) throw console.error('Error Viewing Employees By Manager'); 
+        if (err) throw console.error('Error Viewing Employees By Manager');
     })
 }
 
@@ -119,8 +119,8 @@ addDepartment = () => {
             (err, res) => {
                 console.table(res)
                 if (err) throw console.error(err);
+                init();
             })
-        init();
     })
 };
 // FUNCTION TO ADD AN EMPLOYEE TO DATABASE
@@ -128,8 +128,11 @@ addEmployee = () => {
     db.query('SELECT * FROM role', (err, roles) => {
         if (err) throw console.error(err);
         const possibleRoles = roles.map(role => ({ name: role.title, value: role.department_id }));
-        db.query('SELECT * FROM employee', (employees) => {
-            const possibleManagers = employees.map(employee => ({ name: employee.first_name + ' ' + employee.last_name, value: employee.role_id }));
+        console.log('POSSIBLE ROLES', possibleRoles)
+        db.query('SELECT * FROM employee', (err, employees) => {
+            if (err) throw console.error(err);
+            const possibleManagers = employees.map(employee => ({ name: employee.first_name + ' ' + employee.last_name, value: employee.id }));
+            console.log('POSSIBLE MANAGERS', possibleManagers)
             prompt([
                 {
                     name: 'firstName',
@@ -160,8 +163,8 @@ addEmployee = () => {
                     (err, res) => {
                         console.table(res)
                         if (err) throw console.error(err)
+                        init();
                     })
-                init();
             })
         });
     })
@@ -196,8 +199,8 @@ addRole = () => {
                 (err, res) => {
                     console.table(res)
                     if (err) throw console.error(err);
+                    init();
                 })
-            init();
         })
     });
 };
@@ -360,12 +363,12 @@ const init = () => {
             'VIEW ALL ROLES', //DONE
             // 'VIEW EMPLOYEES BY DEPARTMENT', //BONUS NEED WORK
             // 'VIEW EMPLOYEES BY MANAGER', //BONUS NEED WORK
-            'VIEW A DEPARTMENTS TOTAL UTILIZED BUDGET', //BONUS NEED WORK
+            // 'VIEW A DEPARTMENTS TOTAL UTILIZED BUDGET', //BONUS NEED WORK
             'ADD DEPARTMENT', //DONE
             'ADD EMPLOYEE', //DONE
             'ADD ROLE', //DONE
             'UPDATE EMPLOYEE ROLE', //DONE 
-            'UPDATE EMPLOYEES MANAGER', //BONUS NEED WORK
+            // 'UPDATE EMPLOYEES MANAGER', //BONUS NEED WORK
             'DELETE A DEPARTMENT', //BONUS DONE
             'DELETE AN EMPLOYEE', //BONUS DONE
             'DELETE A ROLE', //BONUS DONE  
