@@ -13,10 +13,16 @@
 * This application is a MySQL driven database application. This application is ran completely in your terminal. Once started you are prompted with a nice Employee Manager drawn out along with a list of options on what you would like to do. The purpose being a neat, clean and simple way to store company data ie. departments, roles and employees within the company. You can view all departments, view all employees, view all roles, add a department, add employee, add role, update an employees role, delete a department, delete an employee or delete a role. Depending on which option you select you will be prompted with questions pertaining to that option. Finally, once you have everything the way you'd like it you can simply click the quit option where you will be asked if you are sure you're finished editing the database if so, you will be exited out the program and a nice message will be displayed in your terminal upon exit.
 
 ## Visuals
+
+
 ![Homescreen](./assets/images/homescreen.png)
+
 ![View All Departments](./assets/images/ViewAllDept.png)
+
 ![View All Employees](./assets/images/ViewAllEmp.png)
+
 ![View All Roles](./assets/images/ViewAllRoles.png)
+
 ![Exit](./assets/images/Exit.png)
 
 ## Tests

@@ -212,7 +212,6 @@ deleteEmployee = () => {
     db.query('SELECT * FROM employee', (err, employees) => {
         if (err) throw console.error(err);
         const grabEmployees = employees.map(employee => ({ name: employee.first_name + ' ' + employee.last_name, value: employee.role_id }));
-        console.log('AllEmployees', grabEmployees);
         prompt([
             {
                 name: 'employee',
@@ -239,7 +238,6 @@ deleteRole = () => {
     db.query('SELECT * FROM role', (err, roles) => {
         if (err) throw console.error(err);
         const grabRoles = roles.map(role => ({ name: role.title, value: role.department_id }));
-        console.log('AllRoles', grabRoles);
         prompt([
             {
                 name: 'roles',
