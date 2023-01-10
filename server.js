@@ -1,13 +1,14 @@
+// REQUIRED DEPENDENCIES
 const inquirer = require('inquirer');
 const prompt = inquirer.createPromptModule();
 const mysql = require('mysql2');
 require('console.table');
-
+// LINK TO DATABASE SQL
 const db = mysql.createConnection({
     user: "root",
     database: "employee_db"
 });
-
+// SWITCH CASE STATEMENT TO TRIGGER CORRESPONDING FUNCTION
 const initialPrompt = (type) => {
     switch (type) {
         case 'VIEW ALL DEPARTMENTS':
@@ -19,6 +20,9 @@ const initialPrompt = (type) => {
         case 'VIEW ALL ROLES':
             viewAllRoles();
             break;
+        case 'VIEW A DEPARTMENTS TOTAL UTILIZED BUDGET':
+            viewDepartmentBudget();
+            break;
         case 'ADD DEPARTMENT':
             addDepartment();
             break;
@@ -28,11 +32,14 @@ const initialPrompt = (type) => {
         case 'ADD ROLE':
             addRole();
             break;
+        case 'UPDATE EMPLOYEES MANAGER':
+            updateEmployeeManager();
+            break;
         case 'UPDATE EMPLOYEE ROLE':
             updateEmployeeRole();
             break;
-        case 'UPDATE EMPLOYEES MANAGER':
-            updateEmployeeManager();
+        case 'DELETE A DEPARTMENT':
+            deleteDepartment();
             break;
         case 'DELETE AN EMPLOYEE':
             deleteEmployee();
@@ -40,18 +47,12 @@ const initialPrompt = (type) => {
         case 'DELETE A ROLE':
             deleteRole();
             break;
-        case 'DELETE A DEPARTMENT':
-            deleteDepartment();
-            break;
-        case 'VIEW A DEPARTMENTS TOTAL UTILIZED BUDGET':
-            viewDepartmentBudget();
-            break;
         case 'QUIT':
             quit();
             break;
     }
 };
-
+// FUNCTION TO DISPLAY ALL DEPARTMENTS
 viewAllDepartments = () => {
     db.query('SELECT * FROM department', (err, departments) => {
         if (err) throw console.error('Error Viewing All Departments');
@@ -59,7 +60,7 @@ viewAllDepartments = () => {
         init();
     });
 };
-
+// FUNCTION TO DISPLAY ALL EMPLOYEES
 viewAllEmployees = () => {
     db.query('SELECT * FROM employee', (err, employees) => {
         if (err) throw console.error('Error Viewing All Employees');
@@ -67,7 +68,7 @@ viewAllEmployees = () => {
         init();
     });
 };
-
+// FUNCTION TO DISPLAY ALL ROLES
 viewAllRoles = () => {
     db.query('SELECT * FROM role', (err, roles) => {
         console.table(roles);
@@ -75,6 +76,35 @@ viewAllRoles = () => {
     });
 };
 
+viewEmployeesByManager = () => {
+    db.query('SELECT * FROM employee', (err, employee) => {
+        if (err) throw console.error('Error Viewing Employees By Manager'); 
+    })
+}
+
+// NEEDS WORK BONUS
+viewDepartmentBudget = () => {
+    db.query('SELECT * FROM role JOIN department ON role.department_id = department.id ', (err, departments) => {
+        if (err) throw console.error(err);
+        const grabDepartments = departments.map(department => ({ name: department.name }));
+        console.log('AllDepartments', grabDepartments);
+        prompt([
+            {
+                name: 'departments',
+                type: 'list',
+                message: "Which department would you like to see the total utilized budget of?",
+                choices: grabDepartments
+            }
+        ]).then((answers) => {
+            console.table([answers])
+            // db.query('', {
+
+            // })
+        })
+    })
+    init();
+};
+// FUNCTION TO ADD A DEPARTMENT TO DATABASE
 addDepartment = () => {
     prompt([
         {
@@ -84,14 +114,16 @@ addDepartment = () => {
         }
     ]).then((answers) => {
         console.table([answers])
+        // GRABBING ADDED DEPARTMENT NAME AND INSERTING INTO DATABASE
         db.query(`INSERT INTO department (name) VALUES ('${answers.addDepartment}');`,
-            (err) => {
+            (err, res) => {
+                console.table(res)
                 if (err) throw console.error(err);
             })
         init();
     })
 };
-
+// FUNCTION TO ADD AN EMPLOYEE TO DATABASE
 addEmployee = () => {
     db.query('SELECT * FROM role', (err, roles) => {
         if (err) throw console.error(err);
@@ -123,16 +155,18 @@ addEmployee = () => {
                 }
             ]).then((answers) => {
                 console.table([answers])
+                // GRABBING PROMPT ANSWERS AND CREATING A NEW EMPLOYEE IN DATABASE
                 db.query(`INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${answers.firstName}','${answers.lastName}',${answers.role},${answers.manager});`,
-                    (err) => {
-                        if (err) throw console.error(err);
+                    (err, res) => {
+                        console.table(res)
+                        if (err) throw console.error(err)
                     })
                 init();
             })
         });
     })
 };
-
+// FUNCTION TO ADD A NEW ROLE TO DATABASE
 addRole = () => {
     db.query('SELECT * FROM role', (err, roles) => {
         if (err) throw console.error(err);
@@ -157,15 +191,17 @@ addRole = () => {
             }
         ]).then((answers) => {
             console.table([answers])
+            // GRABBING PROMPT ANSWERS AND CREATING A NEW ROLE IN DATABASE
             db.query(`INSERT INTO role (title, salary, department_id) VALUES ('${answers.title}', ${answers.salary}, ${answers.department});`,
-                (err) => {
+                (err, res) => {
+                    console.table(res)
                     if (err) throw console.error(err);
                 })
             init();
         })
     });
 };
-
+// FUNCTION TO UPDATE AN EMPLOYEES ROLE IN DATABASE
 updateEmployeeRole = () => {
     db.query('SELECT * FROM role', (err, roles) => {
         if (err) throw console.error(err);
@@ -186,6 +222,7 @@ updateEmployeeRole = () => {
                     choices: grabRoles
                 }
             ]).then((answers) => {
+                // GRABBING PROMPT ANSWERS AND UPDATING SPECIFIED EMPLOYEES ROLE IN DATABASE
                 db.query(`UPDATE employee SET role_id=${answers.updateRole} WHERE employee.id=${answers.employeeNames}`, (err, res) => {
                     console.table(res)
                     if (err) {
@@ -197,10 +234,6 @@ updateEmployeeRole = () => {
         });
     })
 };
-
-viewEmployeesByManager = () => {
-    db.query('SELECT ')
-}
 
 // NEED CHECK IF NULL BONUS
 updateEmployeeManager = () => {
@@ -234,11 +267,11 @@ updateEmployeeManager = () => {
         })
     })
 };
-// NEEDS WORKS BONUS
+// FUNCTION TO DELETE AN EMPLOYEE FROM DATABASE
 deleteEmployee = () => {
     db.query('SELECT * FROM employee', (err, employees) => {
         if (err) throw console.error(err);
-        const grabEmployees = employees.map(employee => ({ name: employee.first_name + ' ' + employee.last_name }));
+        const grabEmployees = employees.map(employee => ({ name: employee.first_name + ' ' + employee.last_name, value: employee.role_id }));
         console.log('AllEmployees', grabEmployees);
         prompt([
             {
@@ -248,8 +281,9 @@ deleteEmployee = () => {
                 choices: grabEmployees
             }
         ]).then((answers) => {
-            console.table([answers])
-            db.query(`DELETE FROM employee WHERE employee CONCAT(first_name, ' ', last_name) = ${answers.employee}`, (err, res) => {
+            console.log([answers])
+            // GRABBING PROMPT ANSWERS AND DELETING SPECIFIED EMPLOYEE FROM DATABASE
+            db.query(`DELETE FROM employee WHERE role_id = ${answers.employee}`, (err, res) => {
                 console.table(res)
                 if (err) {
                     throw console.error(err)
@@ -260,7 +294,7 @@ deleteEmployee = () => {
     })
 };
 
-// NEEDS WORK BONUS
+// FUNCTION TO DELETE A ROLE FROM DATABASE
 deleteRole = () => {
     db.query('SELECT * FROM role', (err, roles) => {
         if (err) throw console.error(err);
@@ -275,19 +309,24 @@ deleteRole = () => {
             }
         ]).then((answers) => {
             console.table([answers])
-            db.query('INSERT INTO role', {
-
-            })
+            // GRABBING PROMPT ANSWERS AND DELETING SPECIFIED ROLE FROM DATABASE
+            db.query(`DELETE FROM role WHERE department_id = ${answers.roles}`,
+                (err, res) => {
+                    console.table(res)
+                    if (err) {
+                        throw console.error(err)
+                    }
+                })
         })
         init();
     })
 };
 
-// NEEDS WORK BONUS
+// FUNCTION TO DELETE A DEPARTMENT FROM DATABASE
 deleteDepartment = () => {
     db.query('SELECT * FROM department', (err, departments) => {
         if (err) throw console.error(err);
-        const grabDepartments = departments.map(department => ({ name: department.name }));
+        const grabDepartments = departments.map(department => ({ name: department.name, value: department.id }));
         console.log('AllDepartments', grabDepartments);
         prompt([
             {
@@ -298,36 +337,19 @@ deleteDepartment = () => {
             }
         ]).then((answers) => {
             console.table([answers])
-            db.query('INSERT INTO department', {
-
-            })
+            // GRABBING PROMPT ANSWERS AND DELETING SPECIFIED DEPARTMENT FROM DATABASE
+            db.query(`DELETE FROM department WHERE department.id = ${answers.departments}`,
+                (err, res) => {
+                    console.table(res);
+                    if (err) {
+                        throw console.error(err);
+                    }
+                })
         })
         init();
     })
 };
-// NEEDS WORK BONUS
-viewDepartmentBudget = () => {
-    db.query('SELECT * FROM department', (err, departments) => {
-        if (err) throw console.error(err);
-        const grabDepartments = departments.map(department => ({ name: department.name }));
-        console.log('AllDepartments', grabDepartments);
-        prompt([
-            {
-                name: 'departments',
-                type: 'list',
-                message: "Which department would you like to see the total utilized budget of?",
-                choices: grabDepartments
-            }
-        ]).then((answers) => {
-            console.table([answers])
-            db.query('INSERT INTO department', {
-
-            })
-        })
-        init();
-    })
-};
-
+// PROMPT INITALIZER FOR LIST OF CHOICES
 const init = () => {
     prompt({
         type: 'rawlist',
@@ -336,18 +358,18 @@ const init = () => {
             'VIEW ALL DEPARTMENTS', //DONE
             'VIEW ALL EMPLOYEES', //DONE
             'VIEW ALL ROLES', //DONE
-            // 'VIEW EMPLOYEES BY DEPARTMENT', //BONUS
-            // 'VIEW EMPLOYEES BY MANAGER', //BONUS
-            // 'VIEW A DEPARTMENTS TOTAL UTILIZED BUDGET', //BONUS
+            // 'VIEW EMPLOYEES BY DEPARTMENT', //BONUS NEED WORK
+            // 'VIEW EMPLOYEES BY MANAGER', //BONUS NEED WORK
+            'VIEW A DEPARTMENTS TOTAL UTILIZED BUDGET', //BONUS NEED WORK
             'ADD DEPARTMENT', //DONE
             'ADD EMPLOYEE', //DONE
             'ADD ROLE', //DONE
             'UPDATE EMPLOYEE ROLE', //DONE 
-            // 'UPDATE EMPLOYEES MANAGER', //BONUS
-            // 'DELETE A DEPARTMENT', //BONUS 
-            // 'DELETE AN EMPLOYEE', //BONUS
-            // 'DELETE A ROLE', //BONUS  
-            'QUIT'
+            'UPDATE EMPLOYEES MANAGER', //BONUS NEED WORK
+            'DELETE A DEPARTMENT', //BONUS DONE
+            'DELETE AN EMPLOYEE', //BONUS DONE
+            'DELETE A ROLE', //BONUS DONE  
+            'QUIT' //DONE
         ],
         name: 'type',
     })
@@ -355,7 +377,7 @@ const init = () => {
             initialPrompt(answers.type);
         });
 };
-
+// ONLY ON START UP FOR NODE SERVER.JS CONSOLE.INFO FANCY DISPLAY
 start = () => {
     console.info(`
 ╔ ╗╔════╔═══╗═════╔╗══════════════════╗╔ ╗
@@ -372,10 +394,10 @@ start = () => {
 ║ ║     ╚╝╚╝╚╩╝╚╩╝╚╩╝╚╩═╗╠══╩╝         ║ ║
 ║ ║╔══════════════════╔═╝║════════════╗║ ║
 ╚ ╝╚══════════════════╚══╝════════════╝╚ ╝`
-)
+    )
     init();
 };
-
+// FUNCTION TO CONFIRM EXIT OF PROMPT SYSTEM ON CONFIRM IF NOT RETURN TO LIST OF CHOICES PROMPT
 quit = () => {
     prompt({
         name: 'quit',
