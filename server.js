@@ -196,6 +196,7 @@ updateEmployeeRole = () => {
                     choices: grabRoles
                 }
             ]).then((answers) => {
+                console.table([answers])
                 // GRABBING PROMPT ANSWERS AND UPDATING SPECIFIED EMPLOYEES ROLE IN DATABASE
                 db.query(`UPDATE employee SET role_id=${answers.updateRole} WHERE employee.id=${answers.employeeNames}`, (err, res) => {
                     console.table(res, 'Successfully updated employees role\n')
@@ -220,7 +221,7 @@ deleteEmployee = () => {
                 choices: grabEmployees
             }
         ]).then((answers) => {
-            console.log([answers])
+            console.table([answers])
             // GRABBING PROMPT ANSWERS AND DELETING SPECIFIED EMPLOYEE FROM DATABASE
             db.query(`DELETE FROM employee WHERE role_id = ${answers.employee}`, (err, res) => {
                 console.table(res, 'Successfully deleted employee\n')
@@ -237,7 +238,8 @@ deleteEmployee = () => {
 deleteRole = () => {
     db.query('SELECT * FROM role', (err, roles) => {
         if (err) throw console.error(err);
-        const grabRoles = roles.map(role => ({ name: role.title, value: role.department_id }));
+        const grabRoles = roles.map(role => ({ name: role.title, value: role.id }));
+        console.log('GRAB ROLES', grabRoles)
         prompt([
             {
                 name: 'roles',
@@ -248,7 +250,7 @@ deleteRole = () => {
         ]).then((answers) => {
             console.table([answers])
             // GRABBING PROMPT ANSWERS AND DELETING SPECIFIED ROLE FROM DATABASE
-            db.query(`DELETE FROM role WHERE department_id = ${answers.roles}`,
+            db.query(`DELETE FROM role WHERE id = ${answers.roles}`,
                 (err, res) => {
                     console.table(res, 'Successfully deleted role\n')
                     if (err) {
