@@ -239,7 +239,6 @@ deleteRole = () => {
     db.query('SELECT * FROM role', (err, roles) => {
         if (err) throw console.error(err);
         const grabRoles = roles.map(role => ({ name: role.title, value: role.id }));
-        console.log('GRAB ROLES', grabRoles)
         prompt([
             {
                 name: 'roles',
